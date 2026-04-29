@@ -1,0 +1,105 @@
+mysql> use secure_vault;
+Database changed
+mysql> show tables;
++------------------------+
+| Tables_in_secure_vault |
++------------------------+
+| users                  |
++------------------------+
+1 row in set (0.10 sec)
+
+mysql> ^C
+mysql> desc users;
++-------------------+--------------+------+-----+-------------------+-------------------+
+| Field             | Type         | Null | Key | Default           | Extra             |
++-------------------+--------------+------+-----+-------------------+-------------------+
+| id                | bigint       | NO   | PRI | NULL              | auto_increment    |
+| username          | varchar(100) | NO   | UNI | NULL              |                   |
+| pw_salt_b64       | text         | NO   |     | NULL              |                   |
+| recovery_salt_b64 | text         | NO   |     | NULL              |                   |
+| created_at        | timestamp    | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
++-------------------+--------------+------+-----+-------------------+-------------------+
+5 rows in set (0.02 sec)
+
+mysql> drop table users;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> CREATE TABLE users (  id BIGINT AUTO_INCREMENT PRIMARY KEY,  username VARCHAR(100) UNIQUE NOT NULL,  pw_salt_b64 VARCHAR(50) NOT NULL,  recovery_salt_b64 VARCHAR(50) NOT NULL,  auth_verifier_b64 VARCHAR(50) NOT NULL,  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> CREATE TABLE users (  id BIGINT AUTO_INCREMENT PRIMARY KEY,  username VARCHAR(100) UNIQUE NOT NULL,  pw_salt_b64 VARCHAR(50) NOT NULL,  recovery_salt_b64 VARCHAR(50) NOT NULL,  auth_verifier_b64 VARCHAR(50) NOT NULL,  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+ERROR 1050 (42S01): Table 'users' already exists
+mysql> CREATE TABLE devices (
+    ->   id VARCHAR(100) PRIMARY KEY,
+    ->   username VARCHAR(100) NOT NULL,
+    ->
+    ->   device_name VARCHAR(255),
+    ->   active BOOLEAN DEFAULT TRUE,
+    ->
+    ->   fingerprint_hash_b64 VARCHAR(50),
+    ->   ip_hint_hash_b64 VARCHAR(50),
+    ->
+    ->   public_key_jwk JSON NOT NULL,
+    ->
+    ->   enc_private_key_password JSON,
+    ->   enc_private_key_recovery JSON,
+    ->
+    ->   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ->
+    ->   FOREIGN KEY (username)
+    ->     REFERENCES users(username)
+    ->     ON DELETE CASCADE
+    ->     ON UPDATE CASCADE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE notes (
+    ->   id VARCHAR(100) PRIMARY KEY,
+    ->   owner_username VARCHAR(100) NOT NULL,
+    ->
+    ->   title VARCHAR(255),
+    ->   encrypted_note LONGTEXT NOT NULL,
+    ->
+    ->   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ->   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ->
+    ->   FOREIGN KEY (owner_username)
+    ->     REFERENCES users(username)
+    ->     ON DELETE CASCADE
+    ->     ON UPDATE CASCADE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> CREATE TABLE note_access (
+    ->   note_id VARCHAR(100) NOT NULL,
+    ->   device_id VARCHAR(100) NOT NULL,
+    ->
+    ->   wrapped_master_key_b64 TEXT NOT NULL,
+    ->
+    ->   role ENUM('owner', 'viewer') DEFAULT 'viewer',
+    ->
+    ->   fingerprint_hash_b64 VARCHAR(50),
+    ->   ip_hint_hash_b64 VARCHAR(50),
+    ->
+    ->   PRIMARY KEY (note_id, device_id),
+    ->
+    ->   FOREIGN KEY (note_id)
+    ->     REFERENCES notes(id)
+    ->     ON DELETE CASCADE,
+    ->
+    ->   FOREIGN KEY (device_id)
+    ->     REFERENCES devices(id)
+    ->     ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> show tables;
++------------------------+
+| Tables_in_secure_vault |
++------------------------+
+| devices                |
+| note_access            |
+| notes                  |
+| users                  |
++------------------------+
+4 rows in set (0.00 sec)
