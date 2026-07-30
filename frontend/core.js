@@ -13,7 +13,8 @@
     - Public IP cannot be read reliably from browser JS alone.
     - Pass ipHint from your backend later if you want that signal.
   */
-  import { API_URL } from "./config.js";
+
+
   const SecureVault = (() => {
     const DB_KEY = "secure_notes_v5";
     const te = new TextEncoder();
@@ -324,7 +325,7 @@
       };
 
       // 3. Shoot it over to the Express Server
-      const response = await fetch('http://localhost:3000/api/register', {
+      const response = await fetch(`${API_URL}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -345,7 +346,7 @@
 
   async function validateLogin(username, password, deviceId) {
       // 1. Ask the server for the user's specific Salt
-      const saltRes = await fetch(`http://localhost:3000/api/salt/${username}`);
+      const saltRes = await fetch(`${API_URL}/api/salt/${username}`);
       if (!saltRes.ok) throw new Error("Could not fetch salt.");
       const { pwSaltB64 } = await saltRes.json();
 
@@ -354,7 +355,7 @@
       const authVerifierB64 = await generateAuthVerifier(passwordKey);
 
       // 3. Send the proof (AuthVerifier) to the server to actually log in
-      const loginRes = await fetch('http://localhost:3000/api/login', {
+      const loginRes = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -385,7 +386,7 @@
     
 async function addDevice({ username, password, deviceName = "New device" }) {
     // 1. Get Salt to prove identity
-    const saltRes = await fetch(`http://localhost:3000/api/salt/${username}`);
+    const saltRes = await fetch(`${API_URL}/api/salt/${username}`);
     const { pwSaltB64 } = await saltRes.json();
 
     const passwordKey = await makeSecretKey(password, b64ToBytes(pwSaltB64));
@@ -398,7 +399,7 @@ async function addDevice({ username, password, deviceName = "New device" }) {
     const deviceId = randomId("dev_");
 
     // 3. Upload to server
-    const res = await fetch('http://localhost:3000/api/devices', {
+    const res = await fetch(`${API_URL}/api/devices`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -426,7 +427,7 @@ async function addDevice({ username, password, deviceName = "New device" }) {
     // 3. Re-wrap the key
     const wrappedMasterKeyB64 = await wrapMasterKeyForPublicKey(masterRaw, publicKeyJwk);
 
-    const response = await fetch(`http://localhost:3000/api/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/api/notes/${noteId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ title, encryptedNote, wrappedMasterKeyB64 })
@@ -437,7 +438,7 @@ async function addDevice({ username, password, deviceName = "New device" }) {
   }
 
   async function deleteNote({ noteId, token }) {
-    const response = await fetch(`http://localhost:3000/api/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/api/notes/${noteId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -448,7 +449,7 @@ async function addDevice({ username, password, deviceName = "New device" }) {
 
 async function recoverAccount({ username, recoveryPhrase, newPassword }) {
     // 1. Fetch ALL recovery data from the specific recovery endpoint
-    const devRes = await fetch(`http://localhost:3000/api/devices/recovery/${username}`);
+    const devRes = await fetch(`${API_URL}/api/devices/recovery/${username}`);
     if (!devRes.ok) throw new Error("Could not find recovery data.");
     
     // Extract the salt from HERE, not from the /api/salt endpoint!
@@ -470,7 +471,7 @@ async function recoverAccount({ username, recoveryPhrase, newPassword }) {
     const newEncPrivateByPassword = await encryptPrivateKeyWithSecret(privateKey, newPasswordKey);
 
     // 4. Send updated credentials to server
-    const recRes = await fetch(`http://localhost:3000/api/users/recovery/update-auth`, {
+    const recRes = await fetch(`${API_URL}/api/users/recovery/update-auth`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -517,7 +518,7 @@ async function recoverAccount({ username, recoveryPhrase, newPassword }) {
         ipHintHashB64: ipHint ? await sha256String(ipHint) : ""
       };
 
-      const response = await fetch('http://localhost:3000/api/notes', {
+      const response = await fetch(`${API_URL}/api/notes`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -537,7 +538,7 @@ async function recoverAccount({ username, recoveryPhrase, newPassword }) {
     assert(privateKey && token, "Private Key and Token are required.");
 
     // 1. Fetch the encrypted note and your specific wrapped key from the server
-    const response = await fetch(`http://localhost:3000/api/notes/${noteId}`, {
+    const response = await fetch(`${API_URL}/api/notes/${noteId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error("Failed to fetch note from server.");
@@ -562,13 +563,13 @@ async function shareNote({ noteId, recipientUsername, ownerPrivateKey, token }) 
     assert(ownerPrivateKey && token, "Private key and token required to share.");
 
     // 1. Fetch the note's current wrapped key
-    const noteRes = await fetch(`http://localhost:3000/api/notes/${noteId}`, {
+    const noteRes = await fetch(`${API_URL}/api/notes/${noteId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const noteData = await noteRes.json();
 
     // 2. Fetch the recipient's Public RSA Key
-    const userRes = await fetch(`http://localhost:3000/api/users/${recipientUsername}/key`, {
+    const userRes = await fetch(`${API_URL}/api/users/${recipientUsername}/key`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!userRes.ok) throw new Error("Recipient not found.");
@@ -580,7 +581,7 @@ async function shareNote({ noteId, recipientUsername, ownerPrivateKey, token }) 
     const newWrappedKeyB64 = await wrapMasterKeyForPublicKey(masterRaw, userData.publicKeyJwk);
 
     // 4. Send the new lock to the server
-    const shareRes = await fetch(`http://localhost:3000/api/notes/${noteId}/share`, {
+    const shareRes = await fetch(`${API_URL}/api/notes/${noteId}/share`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -598,7 +599,7 @@ async function shareNote({ noteId, recipientUsername, ownerPrivateKey, token }) 
 
 async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token }) {
     // 1. Fetch the note and ALL users who currently have access (with their public keys)
-    const fullNoteRes = await fetch(`http://localhost:3000/api/notes/${noteId}/full`, {
+    const fullNoteRes = await fetch(`${API_URL}/api/notes/${noteId}/full`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     const fullNote = await fullNoteRes.json();
@@ -625,7 +626,7 @@ async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token })
     }
 
     // 5. Upload the rotated keys and the newly encrypted note blob
-    const rotateRes = await fetch(`http://localhost:3000/api/notes/${noteId}/rotate`, {
+    const rotateRes = await fetch(`${API_URL}/api/notes/${noteId}/rotate`, {
       method: 'PUT',
       headers: { 
         'Content-Type': 'application/json', 
@@ -642,7 +643,7 @@ async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token })
   }
 
     async function listUserNotes(token) {
-    const response = await fetch('http://localhost:3000/api/notes/owned', {
+    const response = await fetch(`${API_URL}/api/notes/owned`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error("Failed to fetch your notes.");
@@ -650,7 +651,7 @@ async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token })
   }
 
   async function listAccessibleNotes(token) {
-    const response = await fetch('http://localhost:3000/api/notes/shared', {
+    const response = await fetch(`${API_URL}/api/notes/shared`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error("Failed to fetch shared notes.");
@@ -658,7 +659,7 @@ async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token })
   }
 
   async function deactivateDevice({ deviceId, token }) {
-     const res = await fetch(`http://localhost:3000/api/devices/${deviceId}`, {
+     const res = await fetch(`${API_URL}/api/devices/${deviceId}`, {
        method: 'DELETE',
        headers: { 'Authorization': `Bearer ${token}` }
      });
