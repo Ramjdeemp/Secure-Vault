@@ -19,7 +19,7 @@ pool.getConnection()
   })
   .catch(err => {
     console.error("❌ Database connection failed.");
-    console.error("Error:", err.message);
+    console.error(err);
   });
 
 module.exports = pool;
