@@ -13,7 +13,7 @@
     - Public IP cannot be read reliably from browser JS alone.
     - Pass ipHint from your backend later if you want that signal.
   */
-
+  import { API_URL } from "./config.js";
   const SecureVault = (() => {
     const DB_KEY = "secure_notes_v5";
     const te = new TextEncoder();
