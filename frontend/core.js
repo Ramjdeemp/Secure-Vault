@@ -384,6 +384,7 @@
       };
     }
     
+/* Removing addDevice functionality 
 async function addDevice({ username, password, deviceName = "New device" }) {
     // 1. Get Salt to prove identity
     const saltRes = await fetch(`${API_URL}/api/salt/${username}`);
@@ -414,8 +415,8 @@ async function addDevice({ username, password, deviceName = "New device" }) {
 
     if (!res.ok) throw new Error("Failed to register new device.");
     return { deviceId, publicKeyJwk };
-  }
-
+  } 
+*/
   async function updateNote({ noteId, title, noteText, publicKeyJwk, token }) {
     // 1. Create a NEW Master Key (Best practice: Key Rotation)
     const masterRaw = randomBytes(32);
@@ -671,7 +672,6 @@ async function revokeAccess({ noteId, revokedUsername, ownerPrivateKey, token })
 
     return {
       createUser,
-      addDevice,
       createNote,
       unlockNote,
       shareNote,
