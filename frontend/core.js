@@ -9,9 +9,7 @@
     - soft fingerprint/IP context checks
 
     Notes:
-    - This is still a prototype. Storage is localStorage for now.
-    - Public IP cannot be read reliably from browser JS alone.
-    - Pass ipHint from your backend later if you want that signal.
+    - Public IP cannot be read reliably from browser JS alone.  So my idea for device tracking for 2fa will not work, more brainstorming and analysis needed later
   */
 
 
