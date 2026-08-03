@@ -191,9 +191,70 @@
         "apple","anchor","amber","arc","aster","bloom","brisk","cabin","candle","cipher",
         "comet","crystal","delta","ember","falcon","forest","frost","galaxy","harbor","ivory",
         "jungle","kinetic","lunar","maple","mystic","nebula","ocean","onyx","panda","quartz",
-        "raven","ridge","saffron","shadow","signal","silver","solstice","spark","starlight","summit",
-        "temple","thorn","tiger","trident","velvet","violet","wander","whisper","willow","zephyr"
-      ];
+        "ridge","saffron","shadow","signal","silver","solstice","spark","starlight","summit",
+        "temple","thorn","tiger","trident","velvet","violet","wander","whisper","willow","zephyr",
+        "thodeus","rta","death","desaak",
+  // Marvel
+        "asgard","bifrost","mjolnir","stormbreaker","allblack","knull","gorr","thor","odin",
+        "loki","hela","balder","tyr","fenris","mangog","galactus","watcher","eternity",
+        "infinity","oblivion","tribunal","celestial","deviant","skrull","kree","xandar",
+        "nova","annihilus","negativezone","latveria","doom","strange","wong",
+        "vibranium","adamantium","phoenix",
+      
+        // DC
+        "newgenesis","apokolips","darkseid","orion","metron","mobius","boomtube",
+        "motherbox","antilife","monitor","antimonitor","perpetua","sourcewall",
+        "speedforce","krypton","oa","guardian","greenlantern","parallax","spectre",
+        "dreaming","lucifer","constantine","trigon","raven",
+      
+        // Berserk
+        "guts","griffith","casca","puck","skullknight","zodd","void","slan",
+        "ubik","conrad","femto","beherit","eclipse","falconia","godhand",
+        "dragonslayer","berserker","elfhelm","brand","apostle","flora",
+        "schierke","serpico","farnese","isilidro",
+      
+        // Invincible
+        "viltrum","viltrumite","omniman","mark","atomeve","allen","thaedus",
+        "conquest","thragg","battlebeast","sequid","coalition","angstrom",
+        "levy","rex","robot","immortal","mauler",
+      
+        // Trench Crusade
+        "newantioch","heretic","pilgrim","martyr","penitent","templar",
+        "cathedral","trench","legion","inferno","absolution","reliquary",
+        "communion","heresy","blasphemy","crusade","bastion","seraph",
+        "cherub","throne",
+      
+        // Whitehead
+        "occasion","concrescence","prehension","ingression","nexus",
+        "society","eternalobject","creativity","actuality","actualentity",
+        "process","becoming","satisfaction","subjectiveaim","superject",
+        "proposition","lure","feeling","continuum","novelty","advance",
+        "multiplicity","unity","datum",
+      
+        // Hegel
+        "geist","being","nothing","aufhebung","sublation","absolute",
+        "recognition","selfconsciousness","spirit","ethical","universality",
+        "particularity","concrete","dialectic","negation",
+        "mediation","essence","appearance","concept","reason",
+      
+        // Trika / Hindu
+        "spanda","vimarsha","prakasha","shakti","shiva","bindu","nada",
+        "prana","akasha","maya","ananda","moksha","turiya","kaula",
+        "trika","kali","bhairava","tripura","iccha","jnana","kriya",
+      
+        // S.T.A.L.K.E.R.
+        "zone","pripyat","monolith","artifact","emission","anomaly",
+        "controller","bloodsucker","chimera","pseudogiant","ecologist",
+        "clearsky","duty","freedom","mercenary","stalker","noosphere",
+        "wishgranter","cnpp",
+      
+        // Misc philosophy & sci-fi
+        "entropy","telos","logos","nous","arche","apeiron","pleroma",
+        "emanation","hypostasis","daemon","oracle","relic","citadel",
+        "catacomb","abyss","labyrinth","horizon","compass","echo",
+        "granite","cedar","cinder","obsidian","lantern","grove","tundra",
+        "meadow","prairie","brook","copper","linen","harvest"
+    ];
       const rand = new Uint32Array(wordCount);
       crypto.getRandomValues(rand);
       const out = [];
